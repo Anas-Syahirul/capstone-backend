@@ -11,7 +11,7 @@ export const updateStatus = async (req, res) => {
     }
 
     if (status == prevStatus.status) {
-      return res.status(400).json({ msg: 'the status is still the same ' });
+      return res.status(200).json({ msg: 'the status is still the same ' });
     }
 
     const data = await Servo.updateOne(
@@ -22,7 +22,7 @@ export const updateStatus = async (req, res) => {
         },
       }
     );
-    return res.status(400).json({ msg: 'Data successfully updated' });
+    return res.status(200).json({ msg: 'Data successfully updated' });
   } catch (err) {
     return res.status(500).json({ msg: err.message });
   }
@@ -38,7 +38,7 @@ export const getStatus = async (req, res) => {
     }
     delete status._id;
     console.log(status._id);
-    return res.status(400).json(status);
+    return res.status(200).json(status);
   } catch (err) {
     return res.status(500).json({ msg: err.message });
   }
@@ -50,7 +50,7 @@ export const postStatus = async (req, res) => {
     const newStatus = new Servo({ status });
 
     const savedStatus = await newStatus.save();
-    return res.status(400).json(savedStatus);
+    return res.status(200).json(savedStatus);
   } catch (err) {
     return res.status(500).json({ msg: err.message });
   }

@@ -56,7 +56,7 @@ export const getDhtRain = async (req, res) => {
       return res.status(404).json({ msg: 'Data not Found' });
     }
     delete dhtRain._id;
-    return res.status(400).json(dhtRain);
+    return res.status(200).json(dhtRain);
   } catch (err) {
     return res.status(500).json({ msg: err.message });
   }
