@@ -2,11 +2,14 @@ import DhtRain from '../models/DhtRain.js';
 
 export const postDhtRain = async (req, res) => {
   try {
-    const { temperature, humidity, rainWetAreaPercentage } = req.body;
+    const userId = req.user.id;
+    const { temperature, humidity, rainWetAreaPercentage, weather } = req.body;
     const newDhtRain = new DhtRain({
+      userId,
       temperature,
       humidity,
       rainWetAreaPercentage,
+      weather,
     });
     const savedDhtRain = await newDhtRain.save();
     return res.status(200).json(savedDhtRain);
@@ -17,28 +20,32 @@ export const postDhtRain = async (req, res) => {
 
 export const updateDhtRain = async (req, res) => {
   try {
-    const { id } = req.params;
-    const prevData = await DhtRain.findById(id);
-
-    const { temperature, humidity, rainWetAreaPercentage } = req.body;
+    const userId = req.user.id;
+    const prevData = await DhtRain.findOne({ userId });
+    const { temperature, humidity, rainWetAreaPercentage, weather } = req.body;
+    if (!prevData) {
+      await new DhtRain({
+        userId,
+        temperature,
+        humidity,
+        rainWetAreaPercentage,
+        weather,
+      }).save();
+      return res.status(201).json({ msg: 'Created New Data' });
+    }
 
     if (!prevData) {
       return res.status(400).json({ msg: 'Data Not Found' });
     }
 
-    // const newData = new DhtRain({
-    //   temperature,
-    //   humidity,
-    //   rainWetAreaPercentage,
-    // })
-
     const data = await DhtRain.updateOne(
-      { _id: id },
+      { _id: prevData._id },
       {
         $set: {
           temperature,
           humidity,
           rainWetAreaPercentage,
+          weather,
         },
       }
     );
@@ -50,8 +57,8 @@ export const updateDhtRain = async (req, res) => {
 
 export const getDhtRain = async (req, res) => {
   try {
-    const { id } = req.params;
-    const dhtRain = await DhtRain.findById(id).lean();
+    const userId = req.user.id;
+    const dhtRain = await DhtRain.findOne({ userId }).lean();
     if (!dhtRain) {
       return res.status(404).json({ msg: 'Data not Found' });
     }

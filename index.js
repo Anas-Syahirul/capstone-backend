@@ -6,7 +6,8 @@ import dotenv from 'dotenv';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import dhtRoutes from './routes/dhtRain.js';
-import servoRoutes from './routes/servo.js';
+import roofRoutes from './routes/roof.js';
+import authRoutes from './routes/auth.js';
 
 dotenv.config();
 const app = express();
@@ -31,5 +32,6 @@ mongoose
   .catch((error) => console.log(`${error} did not connect`));
 
 /*API */
+app.use('/auth', authRoutes);
 app.use('/dhtRain', dhtRoutes);
-app.use('/servo', servoRoutes);
+app.use('/roof', roofRoutes);

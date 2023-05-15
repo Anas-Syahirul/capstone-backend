@@ -4,11 +4,12 @@ import {
   postDhtRain,
   updateDhtRain,
 } from '../controllers/dhtRain.js';
+import { verifyToken } from '../middleware/auth.js';
 
 const router = express.Router();
 
-router.post('/', postDhtRain);
-router.put('/:id', updateDhtRain);
-router.get('/:id', getDhtRain);
+router.post('/', verifyToken, postDhtRain);
+router.put('/', verifyToken, updateDhtRain);
+router.get('/', verifyToken, getDhtRain);
 
 export default router;

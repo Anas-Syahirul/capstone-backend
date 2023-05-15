@@ -1,24 +1,30 @@
-import Servo from '../models/Servo.js';
+import Roof from '../models/Roof.js';
 
 export const updateStatus = async (req, res) => {
   try {
-    const { id } = req.params;
-    const { status } = req.body;
-    const prevStatus = await Servo.findById(id);
+    const userId = req.user.id;
+    const prevData = await Roof.findOne({ userId });
+    const { status, controller } = req.body;
+    if (!prevData) {
+      await new Roof({ userId, status, controller }).save();
+      return res.status(201).json({ msg: 'Created new Data' });
+    }
+    const prevStatus = await Roof.findById(prevData._id);
 
     if (!prevStatus) {
       return res.status(404).json({ msg: 'Data Not Found' });
     }
 
-    if (status == prevStatus.status) {
-      return res.status(200).json({ msg: 'the status is still the same ' });
+    if (status == prevStatus.status && controller === prevStatus.controller) {
+      return res.status(200).json({ msg: 'the condition is still the same ' });
     }
 
-    const data = await Servo.updateOne(
-      { _id: id },
+    const data = await Roof.updateOne(
+      { _id: prevStatus._id },
       {
         $set: {
           status,
+          controller,
         },
       }
     );
@@ -30,13 +36,14 @@ export const updateStatus = async (req, res) => {
 
 export const getStatus = async (req, res) => {
   try {
-    const { id } = req.params;
-    const status = await Servo.findById(id).lean();
+    const userId = req.user.id;
+    const status = await Roof.findOne({ userId }).lean();
 
     if (!status) {
       return res.status(404).json({ msg: 'Data not found' });
     }
     delete status._id;
+    delete status.userId;
     console.log(status._id);
     return res.status(200).json(status);
   } catch (err) {
@@ -46,8 +53,9 @@ export const getStatus = async (req, res) => {
 
 export const postStatus = async (req, res) => {
   try {
-    const { status } = req.body;
-    const newStatus = new Servo({ status });
+    const userId = req.user.id;
+    const { status, controller } = req.body;
+    const newStatus = new Roof({ userId, status, controller });
 
     const savedStatus = await newStatus.save();
     return res.status(200).json(savedStatus);
