@@ -31,7 +31,7 @@ mongoose
   })
   .catch((error) => console.log(`${error} did not connect`));
 
-/*API */
+/*API Routes*/
 app.use('/auth', authRoutes);
 app.use('/dhtRain', dhtRoutes);
 app.use('/roof', roofRoutes);
