@@ -44,7 +44,6 @@ export const getStatus = async (req, res) => {
     }
     delete status._id;
     delete status.userId;
-    console.log(status._id);
     return res.status(200).json(status);
   } catch (err) {
     return res.status(500).json({ msg: err.message });
