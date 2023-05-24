@@ -18,6 +18,38 @@ export const postDhtRain = async (req, res) => {
   }
 };
 
+export const updateDhtOnly = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const prevData = await DhtRain.findOne({ userId });
+    const { temperature, humidity, rainWetAreaPercentage, weather } = req.body;
+    if (!prevData) {
+      await new DhtRain({
+        userId,
+        temperature,
+        humidity,
+        rainWetAreaPercentage,
+        weather,
+      }).save();
+      return res.status(201).json({ msg: 'Created New Data' });
+    }
+    const data = await DhtRain.updateOne(
+      { _id: prevData._id },
+      {
+        $set: {
+          temperature,
+          humidity,
+          rainWetAreaPercentage,
+          weather,
+        },
+      }
+    );
+    return res.status(200).json({ msg: 'Data successfully updated' });
+  } catch (err) {
+    return res.status(500).json({ msg: err.message });
+  }
+};
+
 export const updateDhtRain = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -32,10 +64,6 @@ export const updateDhtRain = async (req, res) => {
         weather,
       }).save();
       return res.status(201).json({ msg: 'Created New Data' });
-    }
-
-    if (!prevData) {
-      return res.status(400).json({ msg: 'Data Not Found' });
     }
 
     const data = await DhtRain.updateOne(
