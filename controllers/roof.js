@@ -93,7 +93,7 @@ export const getStatusNoAuth = async (req, res) => {
     }
     delete status._id;
     delete status.userId;
-    return res.status(200).json(status);
+    return res.status(200).json(status.status);
   } catch (err) {
     return res.status(500).json({ msg: err.message });
   }
